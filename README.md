@@ -36,3 +36,7 @@ Notes
 - Requires WakaTime CLI (`wakatime-cli.exe`).
 - By default logs append; use `-Truncate` to start fresh.
 - VBScript writes a bootstrap log to `%LOCALAPPDATA%\WakaTime\watcher-bootstrap.log` for troubleshooting hidden launches.
+
+## Acknowledgements
+- Built with help from [GitHub Copilot](https://github.com/features/copilot) as an AI pair programmer in VS Code.
+- Thanks to the [WakaTime CLI](https://wakatime.com) and [XMind](https://www.xmind.net/) for the tooling this workflow relies on.
