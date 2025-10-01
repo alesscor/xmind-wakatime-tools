@@ -1,0 +1,30 @@
+# Logs
+*.log
+*.log.*
+*.tmp
+*.bak
+*.old
+
+# Local WakaTime folder (contains logs)
+/WakaTime/
+
+# Windows / PowerShell artifacts
+Thumbs.db
+Desktop.ini
+*.lnk
+
+# VS Code
+.vscode/
+.history/
+
+# Caches
+__pycache__/
+node_modules/
+
+# Archives
+*.zip
+*.7z
+*.rar
+
+# Task Scheduler exports
+*.xml
