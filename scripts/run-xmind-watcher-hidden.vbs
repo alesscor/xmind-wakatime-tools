@@ -19,6 +19,21 @@ lfInit.WriteLine "[" & Now & "] run-watcher-hidden: enter, args.count=" & CStr(W
 lfInit.Close
 On Error GoTo 0
 
+' Extract desired -WatchPath from arguments (to allow multiple instances for different folders)
+Dim desiredWatchPath, iArg
+desiredWatchPath = ""
+For iArg = 0 To WScript.Arguments.Count - 2
+  If LCase(CStr(WScript.Arguments(iArg))) = "-watchpath" Then
+    desiredWatchPath = CStr(shell.ExpandEnvironmentStrings(CStr(WScript.Arguments(iArg + 1))))
+    Exit For
+  End If
+Next
+If desiredWatchPath <> "" Then
+  On Error Resume Next
+  desiredWatchPath = fso.GetAbsolutePathName(desiredWatchPath)
+  On Error GoTo 0
+End If
+
 If Not fso.FileExists(ps1) Then
   Dim bootLogMissing, bootDirMissing, lfMissing
   bootLogMissing = shell.ExpandEnvironmentStrings("%LOCALAPPDATA%\WakaTime\watcher-bootstrap.log")
@@ -45,7 +60,14 @@ If Err.Number = 0 Then
     If Not IsNull(procs.CommandLine) Then cmdline = CStr(procs.CommandLine)
     On Error GoTo 0
     If cmdline <> "" Then
-      If InStr(1, cmdline, ps1, vbTextCompare) > 0 Then already = True
+      If InStr(1, cmdline, ps1, vbTextCompare) > 0 Then
+        If desiredWatchPath <> "" Then
+          If InStr(1, cmdline, desiredWatchPath, vbTextCompare) > 0 Then already = True
+        Else
+          ' If we can't parse desired watch path, fall back to old single-instance behavior
+          already = True
+        End If
+      End If
     End If
     If already Then Exit For
   Next
@@ -56,7 +78,7 @@ If Err.Number = 0 Then
     On Error Resume Next
     If Not fso.FolderExists(bootDirAlready) Then fso.CreateFolder(bootDirAlready)
     Set lfAlready = fso.OpenTextFile(bootLogAlready, 8, True)
-    lfAlready.WriteLine "[" & Now & "] run-watcher-hidden: already running, skip. ps1=" & ps1
+    lfAlready.WriteLine "[" & Now & "] run-watcher-hidden: already running, skip. ps1=" & ps1 & " watchPath=" & desiredWatchPath
     lfAlready.Close
     On Error GoTo 0
     WScript.Quit 0
