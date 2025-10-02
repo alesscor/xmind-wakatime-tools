@@ -10,6 +10,7 @@ param(
   [int]$MinIntervalMs = 2000,
   [switch]$NoHostname,
   [switch]$Truncate,
+  [switch]$NoSkipLog,
   [switch]$Hidden
 )
 
@@ -27,6 +28,7 @@ $args = "$psFlags -ExecutionPolicy Bypass -File $escapedScript -WatchPath '$Watc
 if ($Project) { $args += " -Project '$Project'" }
 if ($NoHostname) { $args += ' -NoHostname' }
 if ($Truncate) { $args += ' -Truncate' }
+if ($NoSkipLog) { $args += ' -NoSkipLog' }
 
 $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $args
 $trigger = New-ScheduledTaskTrigger -AtLogOn

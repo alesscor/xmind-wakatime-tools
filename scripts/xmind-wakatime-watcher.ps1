@@ -10,6 +10,7 @@ param(
   [string]$LogPath,
   [switch]$Truncate,
   [switch]$Append,
+  [switch]$NoSkipLog,
   [int]$RotateCount = 0,
   [int]$RotateKeep = 5,
   [switch]$Quiet,
@@ -68,6 +69,7 @@ $fsw | Add-Member -NotePropertyName RotateCount -NotePropertyValue $RotateCount 
 $fsw | Add-Member -NotePropertyName RotateKeep -NotePropertyValue $RotateKeep -Force
 $fsw | Add-Member -NotePropertyName CurrentCount -NotePropertyValue 0 -Force
 $fsw | Add-Member -NotePropertyName MinIntervalMs -NotePropertyValue $MinIntervalMs -Force
+$fsw | Add-Member -NotePropertyName NoSkipLog -NotePropertyValue $NoSkipLog.IsPresent -Force
 $fsw | Add-Member -NotePropertyName LastBeat -NotePropertyValue ([System.Collections.Hashtable]::Synchronized((New-Object System.Collections.Hashtable))) -Force
 
 $fsw.EnableRaisingEvents = $true
@@ -120,7 +122,7 @@ try {
             Remove-Event -EventIdentifier $peek.EventIdentifier -ErrorAction SilentlyContinue
             $drained++
           }
-          if ($fsw.LogPath -and $drained -gt 0) { Add-Content -Path $fsw.LogPath -Value "[$((Get-Date).ToString('u'))][SKIP] Drained $drained queued events for -> $file" }
+          if ($fsw.LogPath -and $drained -gt 0 -and -not $fsw.NoSkipLog) { Add-Content -Path $fsw.LogPath -Value "[$((Get-Date).ToString('u'))][SKIP] Drained $drained queued events for -> $file" }
         } catch { }
       } catch {
         if ($fsw.LogPath) { Add-Content -Path $fsw.LogPath -Value "[$((Get-Date).ToString('u'))][ERROR] ${file} :: $($_.Exception.Message)" }
