@@ -11,6 +11,7 @@ param(
   [switch]$NoHostname,
   [switch]$Truncate,
   [switch]$NoSkipLog,
+  [switch]$NoInfoLog,
   [switch]$Hidden
 )
 
@@ -29,6 +30,7 @@ if ($Project) { $args += " -Project '$Project'" }
 if ($NoHostname) { $args += ' -NoHostname' }
 if ($Truncate) { $args += ' -Truncate' }
 if ($NoSkipLog) { $args += ' -NoSkipLog' }
+if ($NoInfoLog) { $args += ' -NoInfoLog' }
 
 $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $args
 $trigger = New-ScheduledTaskTrigger -AtLogOn

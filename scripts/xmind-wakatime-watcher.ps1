@@ -11,6 +11,7 @@ param(
   [switch]$Truncate,
   [switch]$Append,
   [switch]$NoSkipLog,
+  [switch]$NoInfoLog,
   [int]$RotateCount = 0,
   [int]$RotateKeep = 5,
   [switch]$Quiet,
@@ -70,11 +71,12 @@ $fsw | Add-Member -NotePropertyName RotateKeep -NotePropertyValue $RotateKeep -F
 $fsw | Add-Member -NotePropertyName CurrentCount -NotePropertyValue 0 -Force
 $fsw | Add-Member -NotePropertyName MinIntervalMs -NotePropertyValue $MinIntervalMs -Force
 $fsw | Add-Member -NotePropertyName NoSkipLog -NotePropertyValue $NoSkipLog.IsPresent -Force
+$fsw | Add-Member -NotePropertyName NoInfoLog -NotePropertyValue $NoInfoLog.IsPresent -Force
 $fsw | Add-Member -NotePropertyName LastBeat -NotePropertyValue ([System.Collections.Hashtable]::Synchronized((New-Object System.Collections.Hashtable))) -Force
 
 $fsw.EnableRaisingEvents = $true
 
-if ($LogPath) { Add-Content -Path $LogPath -Value "[$((Get-Date).ToString('u'))][INFO] Watcher starting. PID=$PID WatchPath=$WatchPath Project=$Project Category=$Category Plugin=$Plugin Hostname=$Hostname NoHostname=$($NoHostname.IsPresent) MinIntervalMs=$MinIntervalMs Mode=sync" }
+if ($LogPath -and -not $NoInfoLog) { Add-Content -Path $LogPath -Value "[$((Get-Date).ToString('u'))][INFO] Watcher starting. PID=$PID WatchPath=$WatchPath Project=$Project Category=$Category Plugin=$Plugin Hostname=$Hostname NoHostname=$($NoHostname.IsPresent) MinIntervalMs=$MinIntervalMs Mode=sync" }
 if (-not $script:Quiet) { Write-Host "Watching: $WatchPath" -ForegroundColor Green }
 
 $handlers = @()
